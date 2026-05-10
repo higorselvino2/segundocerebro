@@ -1,9 +1,45 @@
+'use client';
+
+import { useState } from 'react';
+
 export default function DashboardHome() {
+  const [ideaText, setIdeaText] = useState('');
+  const [isSending, setIsSending] = useState(false);
+
+  const handleSendIdea = async () => {
+    if (!ideaText.trim()) return;
+    
+    setIsSending(true);
+    try {
+      const res = await fetch('/api/voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: ideaText,
+          source: 'manual',
+          user_id: 'guest_user'
+        })
+      });
+
+      if (res.ok) {
+        setIdeaText('');
+        alert('Ideia enviada com sucesso para o n8n!');
+      } else {
+        alert('Erro ao enviar ideia para o n8n.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erro na comunicação com o servidor.');
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out h-full">
       {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 shrink-0">
-        <div className="bg-[var(--bg-secondary)] border border-[var(--border-glass)] p-5 rounded-xl">
+        <div className="bg-[var(--bg-secondary)] border border-[var(--border-glass)] p-5 rounded-xl transition-all hover:border-[var(--accent-primary)]/50">
           <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-2">
             Memória Total
           </div>
@@ -14,7 +50,7 @@ export default function DashboardHome() {
             </span>
           </div>
         </div>
-        <div className="bg-[var(--bg-secondary)] border border-[var(--border-glass)] p-5 rounded-xl">
+        <div className="bg-[var(--bg-secondary)] border border-[var(--border-glass)] p-5 rounded-xl transition-all hover:border-[var(--accent-secondary)]/50">
           <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-2">
             n8n Webhook
           </div>
@@ -22,7 +58,7 @@ export default function DashboardHome() {
             /segundo-cerebro
           </div>
         </div>
-        <div className="bg-[var(--bg-secondary)] border border-[var(--border-glass)] p-5 rounded-xl">
+        <div className="bg-[var(--bg-secondary)] border border-[var(--border-glass)] p-5 rounded-xl transition-all hover:border-[var(--accent-primary)]/50">
           <div className="text-[var(--text-muted)] text-xs font-semibold uppercase tracking-wider mb-2">
             Última Atividade
           </div>
@@ -41,14 +77,14 @@ export default function DashboardHome() {
             <span className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)]">
               Feed de Pensamentos
             </span>
-            <span className="text-[10px] text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 px-2 py-0.5 rounded-full">
+            <span className="text-[10px] text-[var(--accent-primary)] bg-[var(--accent-primary)]/10 px-2 py-0.5 rounded-full font-bold">
               AO VIVO
             </span>
           </div>
           <div className="flex-1 p-4 space-y-4 overflow-y-auto">
-            <div className="p-4 bg-[var(--bg-primary)] border border-[var(--border-glass)] rounded-lg">
+            <div className="p-4 bg-[var(--bg-primary)] border border-[var(--border-glass)] rounded-lg transition-transform hover:-translate-y-0.5 hover:shadow-lg cursor-pointer">
               <div className="flex justify-between mb-2">
-                <span className="text-xs text-[var(--accent-primary)]">
+                <span className="text-xs text-[var(--accent-primary)] font-semibold">
                   Insights de Negócios
                 </span>
                 <span className="text-[10px] text-[var(--text-muted)]">
@@ -61,9 +97,9 @@ export default function DashboardHome() {
               </p>
             </div>
 
-            <div className="p-4 bg-[var(--bg-primary)] border border-[var(--border-glass)] rounded-lg opacity-80">
+            <div className="p-4 bg-[var(--bg-primary)] border border-[var(--border-glass)] rounded-lg opacity-80 transition-transform hover:-translate-y-0.5 hover:opacity-100 hover:shadow-lg cursor-pointer">
               <div className="flex justify-between mb-2">
-                <span className="text-xs text-[var(--accent-secondary)]">
+                <span className="text-xs text-[var(--accent-secondary)] font-semibold">
                   Referência Técnica
                 </span>
                 <span className="text-[10px] text-[var(--text-muted)]">
@@ -76,9 +112,9 @@ export default function DashboardHome() {
               </p>
             </div>
 
-            <div className="p-4 bg-[var(--bg-primary)] border border-[var(--border-glass)] rounded-lg opacity-60">
+            <div className="p-4 bg-[var(--bg-primary)] border border-[var(--border-glass)] rounded-lg opacity-60 transition-transform hover:-translate-y-0.5 hover:opacity-100 hover:shadow-lg cursor-pointer">
               <div className="flex justify-between mb-2">
-                <span className="text-xs text-[var(--accent-spiritual)]">
+                <span className="text-xs text-[var(--accent-spiritual)] font-semibold">
                   Idea Dump
                 </span>
                 <span className="text-[10px] text-[var(--text-muted)]">
@@ -95,15 +131,21 @@ export default function DashboardHome() {
 
         {/* Quick Capture & Status */}
         <div className="flex-1 flex flex-col gap-6">
-          <div className="bg-emerald-600 rounded-xl p-6 text-white flex flex-col justify-between shrink-0">
-            <h3 className="font-bold mb-4">Capture sua ideia agora</h3>
+          <div className="bg-[var(--accent-primary)] rounded-xl p-6 text-[var(--bg-primary)] flex flex-col justify-between shrink-0">
+            <h3 className="font-bold mb-4 text-white">Capture sua ideia agora</h3>
             <div className="relative">
               <textarea
-                className="w-full bg-white/10 border border-white/20 rounded-lg p-3 text-sm placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 h-24 resize-none"
+                value={ideaText}
+                onChange={(e) => setIdeaText(e.target.value)}
+                className="w-full bg-white/10 border border-white/20 rounded-lg p-3 text-sm placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-white/40 h-24 resize-none text-white"
                 placeholder="O que você está pensando?"
               ></textarea>
-              <button className="mt-3 w-full bg-white text-emerald-600 font-bold py-2 rounded-lg text-sm transition-transform active:scale-95">
-                Enviar para n8n
+              <button 
+                onClick={handleSendIdea}
+                disabled={isSending || !ideaText.trim()}
+                className="mt-3 w-full bg-white text-[var(--accent-primary)] font-bold py-2 rounded-lg text-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white/90"
+              >
+                {isSending ? 'Enviando...' : 'Enviar para n8n'}
               </button>
             </div>
           </div>

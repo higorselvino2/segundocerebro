@@ -8,6 +8,7 @@ export default function VoiceFAB() {
   const [isOpen, setIsOpen] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const toggleOpen = () => {
     if (isOpen) {
@@ -25,6 +26,33 @@ export default function VoiceFAB() {
           ),
         3000,
       );
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const res = await fetch('/api/voice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          text: transcript,
+          source: 'voice',
+          user_id: 'guest_user'
+        })
+      });
+
+      if (res.ok) {
+        alert('Áudio enviado e processado com sucesso!');
+        toggleOpen();
+      } else {
+        alert('Erro ao enviar áudio.');
+      }
+    } catch(e) {
+      console.error(e);
+      alert('Erro de comunicação.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -75,16 +103,16 @@ export default function VoiceFAB() {
 
               <div className="flex-1 flex flex-col items-center justify-center">
                 <div
-                  className={`w-24 h-24 rounded-full flex items-center justify-center mb-8 transition-transform duration-300 ${isRecording ? "bg-[var(--accent-danger)]/20 scale-110" : "bg-[var(--bg-glass)]"}`}
+                  className={`w-24 h-24 rounded-full flex items-center justify-center mb-8 transition-transform duration-300 ${isRecording && !transcript ? "bg-[var(--accent-primary)]/20 scale-110" : "bg-[var(--bg-glass)]"}`}
                 >
                   <div
-                    className={`w-16 h-16 rounded-full flex items-center justify-center ${isRecording ? "bg-[var(--accent-danger)] animate-pulse" : "bg-[var(--border-glass)]"}`}
+                    className={`w-16 h-16 rounded-full flex items-center justify-center transition-colors ${isRecording && !transcript ? "bg-[var(--accent-primary)] animate-pulse shadow-[0_0_20px_var(--accent-primary)]" : "bg-[var(--border-glass)]"}`}
                   >
                     <Mic className="w-8 h-8 text-white" />
                   </div>
                 </div>
 
-                <p className="text-center font-ui text-[var(--text-secondary)] mb-4 h-12 flex items-center justify-center px-4">
+                <p className="text-center font-ui text-[var(--text-primary)] mb-4 h-12 flex items-center justify-center px-4">
                   {transcript ||
                     (isRecording ? "Ouvindo..." : "Pressione para falar")}
                 </p>
@@ -96,16 +124,17 @@ export default function VoiceFAB() {
                     className="flex gap-3"
                   >
                     <button
-                      className="flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--bg-glass)] border border-[var(--border-glass)] text-white font-medium shadow-lg"
-                      onClick={toggleOpen}
+                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--bg-glass)] border border-[var(--border-glass)] text-white hover:bg-[var(--border-glass)] font-medium shadow-lg transition-colors"
+                      onClick={() => setTranscript("")}
                     >
-                      Editar
+                      Refazer
                     </button>
                     <button
-                      className="flex items-center gap-2 px-6 py-3 rounded-full bg-[var(--gradient-success)] text-black font-bold shadow-lg"
-                      onClick={toggleOpen}
+                      className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--accent-primary)] text-[var(--bg-primary)] font-bold shadow-[0_4px_12px_rgba(16,185,129,0.3)] hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      onClick={handleSave}
+                      disabled={isSaving}
                     >
-                      <Check className="w-5 h-5" /> Salvar
+                      <Check className="w-5 h-5" /> {isSaving ? 'Salvando...' : 'Salvar'}
                     </button>
                   </motion.div>
                 )}
