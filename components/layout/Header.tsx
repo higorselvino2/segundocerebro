@@ -23,7 +23,7 @@ export default function Header() {
   return (
     <header className="h-16 border-b border-[var(--border-glass)] flex items-center justify-between px-8 bg-[var(--bg-primary)]">
       <div className="flex items-center gap-4">
-        <h2 className="text-lg font-medium text-white">
+        <h2 className="text-lg font-medium text-white" suppressHydrationWarning>
           {getGreeting()}, Visitante
         </h2>
       </div>

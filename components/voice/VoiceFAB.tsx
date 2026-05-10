@@ -46,7 +46,8 @@ export default function VoiceFAB() {
         alert('Áudio enviado e processado com sucesso!');
         toggleOpen();
       } else {
-        alert('Erro ao enviar áudio.');
+        const errorData = await res.json().catch(() => ({}));
+        alert(`Erro ao enviar áudio: ${errorData.error || res.status}`);
       }
     } catch(e) {
       console.error(e);

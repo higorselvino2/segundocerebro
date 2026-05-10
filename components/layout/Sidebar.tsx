@@ -1,4 +1,7 @@
+'use client';
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Home,
   Calendar,
@@ -13,16 +16,32 @@ import {
 } from "lucide-react";
 
 export default function Sidebar() {
+  const pathname = usePathname();
+  
   const links = [
-    { name: "Dashboard", href: "/", icon: Home, active: true },
-    { name: "Agenda", href: "/agenda", icon: Calendar },
-    { name: "Hábitos", href: "/habitos", icon: CheckSquare },
-    { name: "Livros", href: "/livros", icon: BookOpen },
-    { name: "Diário", href: "/diario", icon: PenTool },
-    { name: "Stats", href: "/estatisticas", icon: BarChart2 },
-    { name: "Perfil", href: "/perfil", icon: User },
-    { name: "Config", href: "/configuracoes", icon: Settings },
+    { name: "Dashboard", href: "/" },
+    { name: "Agenda", href: "/agenda" },
+    { name: "Hábitos", href: "/habitos" },
+    { name: "Livros", href: "/livros" },
+    { name: "Diário", href: "/diario" },
+    { name: "Stats", href: "/estatisticas" },
+    { name: "Perfil", href: "/perfil" },
+    { name: "Config", href: "/configuracoes" },
   ];
+
+  const getIcon = (name: string) => {
+    switch (name) {
+      case "Dashboard": return Home;
+      case "Agenda": return Calendar;
+      case "Hábitos": return CheckSquare;
+      case "Livros": return BookOpen;
+      case "Diário": return PenTool;
+      case "Stats": return BarChart2;
+      case "Perfil": return User;
+      case "Config": return Settings;
+      default: return Home;
+    }
+  };
 
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-[var(--bg-secondary)] border-r border-[var(--border-glass)] hidden md:flex flex-col z-10">
@@ -54,16 +73,20 @@ export default function Sidebar() {
         <div className="py-4 text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-semibold px-2">
           Núcleo Central
         </div>
-        {links.map((link) => (
-          <Link
-            key={link.name}
-            href={link.href}
-            className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${link.active ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20" : "text-[var(--text-secondary)] hover:text-white"}`}
-          >
-            <link.icon className="w-4 h-4" />
-            <span className="text-sm">{link.name}</span>
-          </Link>
-        ))}
+        {links.map((link) => {
+          const isActive = pathname === link.href;
+          const Icon = getIcon(link.name);
+          return (
+            <Link
+              key={link.name}
+              href={link.href}
+              className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${isActive ? "bg-[var(--accent-primary)]/10 text-[var(--accent-primary)] border border-[var(--accent-primary)]/20" : "text-[var(--text-secondary)] hover:text-white"}`}
+            >
+              <Icon className="w-4 h-4" />
+              <span className="text-sm">{link.name}</span>
+            </Link>
+          );
+        })}
 
         <div className="py-6 text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-semibold px-2">
           Integrações

@@ -25,7 +25,8 @@ export default function DashboardHome() {
         setIdeaText('');
         alert('Ideia enviada com sucesso para o n8n!');
       } else {
-        alert('Erro ao enviar ideia para o n8n.');
+        const errorData = await res.json().catch(() => ({}));
+        alert(`Erro ao enviar ideia para o n8n: ${errorData.error || res.status}`);
       }
     } catch (error) {
       console.error(error);
