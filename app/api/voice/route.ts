@@ -4,7 +4,7 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
 
-    const n8nWebhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
+    const n8nWebhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || 'https://webhook.higorselvino.art/webhook-test/segundo-cerebro';
     if (!n8nWebhookUrl) {
       return NextResponse.json(
         { success: false, error: "Webhook URL não configurada" },
